@@ -3,7 +3,7 @@ from os import path, listdir
 from random import shuffle
 from logging import getLogger
 
-from discord import FFmpegPCMAudio, PCMVolumeTransformer
+from discord import FFmpegOpusAudio
 
 logger = getLogger()
 
@@ -37,11 +37,10 @@ class Radio:
             self.play_radio()
 
     def play_radio(self):
-        player = PCMVolumeTransformer(
-            original=FFmpegPCMAudio(
-                source=path.join("music", self.now),
-            ),
-            volume=0.2
+        player = FFmpegOpusAudio(
+            source=path.join("music", self.now),
+            bitrate=384,
+            options='-af "volume=0.2"'
         )
 
         self.voice_client.play(
