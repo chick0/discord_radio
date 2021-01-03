@@ -48,13 +48,14 @@ async def on_command(ctx):
 
 
 async def on_command_error(ctx, error):
-    if error.__class__.__name__ in ["CommandOnCooldown", "NotOwner"]:
+    if error.__class__.__name__ == "CommandOnCooldown":
+        time = str(error).rsplit(" ", 1)[-1][:-1]
         await ctx.send(f"```\n"
-                       f" - {error}\n"
+                       f" - 뭐 그리 급해, {time}초만 기다려\n"
                        f"```<@{ctx.author.id}>")
         return
 
-    if error.__class__.__name__ in ["CommandNotFound", "CheckFailure"]:
+    if error.__class__.__name__ in ["CommandNotFound", "CheckFailure", "NotOwner"]:
         return
 
     logger.info(f"[{ctx.author.id}]{ctx.author} meet the error!")
