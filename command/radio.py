@@ -46,6 +46,7 @@ class Command(commands.Cog, name="라디오 조작 명령어"):
             pass
 
     @commands.command(help="다음 노래로 넘깁니다")
+    @commands.cooldown(3, 10, commands.BucketType.guild)
     @commands.check(is_public)
     async def skip(self, ctx: commands.context):
         try:
