@@ -37,8 +37,8 @@ class Command(commands.Cog, name="봇 주인용 명령어"):
                                    "이미 업로드된 파일입니다.\n"
                                    "```")
                 else:
-                    _u = await attachment.read()
-                    if _u[:2].hex() == "fffb" or _u[:3] == b"ID3":
+                    sig = await attachment.read()
+                    if sig[:2].hex() == "fffb" or sig[:3] == b"ID3":
                         try:
                             await attachment.save(fp=path.join("music", attachment.filename))
                             await ctx.send("```\n"
