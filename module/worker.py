@@ -2,6 +2,7 @@
 from os import path, listdir
 from random import shuffle
 from logging import getLogger
+from asyncio import run_coroutine_threadsafe
 
 from discord import FFmpegOpusAudio
 
@@ -25,18 +26,25 @@ class Radio:
         self.now = "undefined"
 
     def _set_next(self):
-        self.now = self.music_list.pop(1)
-        self.music_list.append(self.now)
+        try:
+            self.now = self.music_list.pop()
+            self.music_list.insert(0, self.now)
+        except IndexError:
+            run_coroutine_threadsafe(
+                coro=self.ctx.send("```\n"
+                                   "음악 폴더에 파일이 없음\n"
+                                   "```"),
+                loop=self.loop
+            )
+            run_coroutine_threadsafe(
+                coro=self.voice_client.disconnect(),
+                loop=self.loop
+            )
 
-    def play_next(self, error):
-        if error is not None:
-            logger.error(f"{error}")
+    def _play_radio(self):
+        if self.now == "undefined":
+            return
 
-        if self.voice_client.is_connected():
-            self._set_next()
-            self.play_radio()
-
-    def play_radio(self):
         player = FFmpegOpusAudio(
             source=path.join("music", self.now),
             bitrate=384,
@@ -47,3 +55,11 @@ class Radio:
             source=player,
             after=self.play_next
         )
+
+    def play_next(self, error):
+        if error is not None:
+            logger.error(f"{error}")
+
+        if self.voice_client.is_connected():
+            self._set_next()
+            self._play_radio()
