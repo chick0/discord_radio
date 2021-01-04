@@ -50,6 +50,25 @@ class Command(commands.Cog, name="라디오 조작 명령어"):
         except AttributeError:
             pass
 
+    @commands.command(help="음성 채널에서 나갔다가 들어옵니다")
+    @commands.check(is_public)
+    async def re(self, ctx: commands.context):
+        try:
+            if ctx.author.voice.channel.id == ctx.guild.voice_client.channel.id:
+                channel = ctx.guild.voice_client.channel
+                await ctx.guild.voice_client.disconnect()
+
+                voice_client = await channel.connect()
+
+                radio = Radio(ctx=ctx, voice_client=voice_client)
+                radio.play_next(error=None)
+            else:
+                await ctx.send("```\n"
+                               "봇이랑 동일한 음성 채널에 들어와야합니다.\n"
+                               "```")
+        except AttributeError:
+            pass
+
     @commands.command(help="다음 노래로 넘깁니다")
     @commands.cooldown(3, 10, commands.BucketType.guild)
     @commands.check(is_public)
