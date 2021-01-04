@@ -41,7 +41,12 @@ class Command(commands.Cog, name="라디오 조작 명령어"):
     @commands.check(is_public)
     async def exit(self, ctx: commands.context):
         try:
-            await ctx.guild.voice_client.disconnect()
+            if ctx.author.voice.channel.id == ctx.guild.voice_client.channel.id:
+                await ctx.guild.voice_client.disconnect()
+            else:
+                await ctx.send("```\n"
+                               "봇이랑 동일한 음성 채널에 들어와야합니다.\n"
+                               "```")
         except AttributeError:
             pass
 
