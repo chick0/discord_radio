@@ -30,8 +30,8 @@ class Command(commands.Cog, name="라디오 조작 명령어"):
         except ClientException as why:
             await ctx.send("```\n"
                            "음성 채널 접속에 실패하였습니다.\n"
-                           "```\n"
-                           f"> {why}")
+                           f"> {why}\n"
+                           "```")
             return
 
         radio = Radio(ctx=ctx, voice_client=voice_client)
