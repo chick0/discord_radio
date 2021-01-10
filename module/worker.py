@@ -15,13 +15,11 @@ class Radio:
         self.voice_client = voice_client
         self.loop = ctx.bot.loop
 
-        self.music_list = listdir(path.join("music"))
+        self.music_list = []
+        for music in listdir(path.join("music")):
+            if music.endswith(".mp3"):
+                self.music_list.append(music)
         shuffle(self.music_list)
-
-        try:
-            self.music_list.remove("README.txt")
-        except ValueError:
-            pass
 
         self.now = "undefined"
 
