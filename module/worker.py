@@ -10,7 +10,7 @@ logger = getLogger()
 
 
 class Radio:
-    def __init__(self, ctx, voice_client):
+    def __init__(self, ctx, voice_client, np=False):
         self.ctx = ctx
         self.voice_client = voice_client
         self.loop = ctx.bot.loop
@@ -22,6 +22,15 @@ class Radio:
         shuffle(self.music_list)
 
         self.now = "undefined"
+        self.np = np
+
+    def _send_np(self):
+        run_coroutine_threadsafe(
+            coro=self.ctx.send("```\n"
+                               f"{self.now}\n"
+                               "```"),
+            loop=self.loop
+        )
 
     def _set_next(self):
         try:
@@ -48,6 +57,9 @@ class Radio:
             bitrate=384,
             options='-af "volume=0.2"'
         )
+
+        if self.np:
+            self._send_np()
 
         self.voice_client.play(
             source=player,
