@@ -25,7 +25,7 @@ class Command(commands.Cog, name="봇 주인용 명령어"):
     @commands.command(help="재생목록을 확인합니다")
     @commands.is_owner()
     async def playlist(self, ctx: commands.context):
-        playlist, index = "", 1
+        playlist, index = "", 0
         for music in listdir(path.join("music")):
             if music.endswith(".mp3"):
                 playlist += f"[{index:03d}] {music}\n"
@@ -35,8 +35,8 @@ class Command(commands.Cog, name="봇 주인용 명령어"):
 
     @commands.command(help="음악을 삭제합니다")
     @commands.is_owner()
-    async def pop(self, ctx: commands.context, music_id: int):
-        target, index = None, 1
+    async def pop(self, ctx: commands.context, music_id: int = -1):
+        target, index = None, 0
         for music in listdir(path.join("music")):
             if music.endswith(".mp3"):
                 if index == music_id:
