@@ -23,15 +23,15 @@ class Command(commands.Cog, name="라디오 조작 명령어"):
         try:
             voice_client = await ctx.author.voice.channel.connect()
         except AttributeError:
-            await ctx.send("```\n"
-                           "먼저 음성 채널에 들어가야 합니다.\n"
-                           "```")
+            await ctx.reply("```\n"
+                            "먼저 음성 채널에 들어가야 합니다.\n"
+                            "```")
             return
         except ClientException as why:
-            await ctx.send("```\n"
-                           "음성 채널 접속에 실패하였습니다.\n"
-                           f"> {why}\n"
-                           "```")
+            await ctx.reply("```\n"
+                            "음성 채널 접속에 실패하였습니다.\n"
+                            f"> {why}\n"
+                            "```")
             return
 
         radio = Radio(ctx=ctx, voice_client=voice_client)
@@ -44,15 +44,15 @@ class Command(commands.Cog, name="라디오 조작 명령어"):
         try:
             voice_client = await ctx.author.voice.channel.connect()
         except AttributeError:
-            await ctx.send("```\n"
-                           "먼저 음성 채널에 들어가야 합니다.\n"
-                           "```")
+            await ctx.reply("```\n"
+                            "먼저 음성 채널에 들어가야 합니다.\n"
+                            "```")
             return
         except (ClientException, Exception) as why:
-            await ctx.send("```\n"
-                           "음성 채널 접속에 실패하였습니다.\n"
-                           f"> {why}\n"
-                           "```")
+            await ctx.reply("```\n"
+                            "음성 채널 접속에 실패하였습니다.\n"
+                            f"> {why}\n"
+                            "```")
             return
 
         if option in ["now", "np"]:
@@ -69,9 +69,9 @@ class Command(commands.Cog, name="라디오 조작 명령어"):
             if ctx.author.voice.channel.id == ctx.guild.voice_client.channel.id:
                 await ctx.guild.voice_client.disconnect()
             else:
-                await ctx.send("```\n"
-                               "봇이랑 동일한 음성 채널에 들어와야합니다.\n"
-                               "```")
+                await ctx.reply("```\n"
+                                "봇이랑 동일한 음성 채널에 들어와야합니다.\n"
+                                "```")
         except AttributeError:
             pass
 
@@ -88,9 +88,9 @@ class Command(commands.Cog, name="라디오 조작 명령어"):
                 radio = Radio(ctx=ctx, voice_client=voice_client)
                 radio.play_next(error=None)
             else:
-                await ctx.send("```\n"
-                               "봇이랑 동일한 음성 채널에 들어와야합니다.\n"
-                               "```")
+                await ctx.reply("```\n"
+                                "봇이랑 동일한 음성 채널에 들어와야합니다.\n"
+                                "```")
         except AttributeError:
             pass
 
@@ -102,8 +102,8 @@ class Command(commands.Cog, name="라디오 조작 명령어"):
             if ctx.author.voice.channel.id == ctx.guild.voice_client.channel.id:
                 await ctx.guild.voice_client.stop()
             else:
-                await ctx.send("```\n"
-                               "봇이랑 동일한 음성 채널에 들어와야합니다.\n"
-                               "```")
+                await ctx.reply("```\n"
+                                "봇이랑 동일한 음성 채널에 들어와야합니다.\n"
+                                "```")
         except (AttributeError, TypeError):
             pass
