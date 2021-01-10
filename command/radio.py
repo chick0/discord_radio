@@ -16,6 +16,27 @@ def is_public(ctx: commands.context):
 
 
 class Command(commands.Cog, name="라디오 조작 명령어"):
+    @commands.command(help="지정한 음악을 재생합니다")
+    @commands.cooldown(3, 10, commands.BucketType.guild)
+    @commands.check(is_public)
+    async def play(self, ctx: commands.context, index: int):
+        try:
+            voice_client = await ctx.author.voice.channel.connect()
+        except AttributeError:
+            await ctx.send("```\n"
+                           "먼저 음성 채널에 들어가야 합니다.\n"
+                           "```")
+            return
+        except ClientException as why:
+            await ctx.send("```\n"
+                           "음성 채널 접속에 실패하였습니다.\n"
+                           f"> {why}\n"
+                           "```")
+            return
+
+        radio = Radio(ctx=ctx, voice_client=voice_client)
+        radio.set_start(index=index)
+
     @commands.command(help="음성 채널에 들어옵니다 (라디오 시작)")
     @commands.cooldown(3, 10, commands.BucketType.guild)
     @commands.check(is_public)

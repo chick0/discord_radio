@@ -54,6 +54,32 @@ class Radio:
             after=self.play_next
         )
 
+    def set_start(self, index: int):
+        music_list = []
+        for music in listdir(path.join("music")):
+            if music.endswith(".mp3"):
+                music_list.append(music)
+
+        try:
+            self.now = music_list[index]
+
+            run_coroutine_threadsafe(
+                coro=self.ctx.send("```\n"
+                                   f"'{self.now}'를 재생합니다\n"
+                                   "```"),
+                loop=self.loop
+            )
+
+            self._play_radio()
+        except (IndexError, Exception):
+            run_coroutine_threadsafe(
+                coro=self.ctx.send("```\n"
+                                   f"'{index}'번째 노래를 찾지 못함\n"
+                                   "```"),
+                loop=self.loop
+            )
+            self.play_next(error=None)
+
     def play_next(self, error):
         if error is not None:
             logger.error(f"{error}")
