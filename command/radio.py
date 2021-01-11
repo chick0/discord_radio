@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+from io import StringIO
+from os import path, listdir
 
+from discord import File
 from discord.ext import commands
 from discord.abc import PrivateChannel
 
@@ -16,6 +19,17 @@ def is_public(ctx: commands.context):
 
 
 class Command(commands.Cog, name="라디오 조작 명령어"):
+    @commands.command(help="재생목록을 확인합니다")
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def playlist(self, ctx: commands.context):
+        playlist, index = "", 0
+        for music in listdir(path.join("music")):
+            if music.endswith(".mp3"):
+                playlist += f"[{index:03d}] {music}\n"
+                index += 1
+        await ctx.reply(file=File(fp=StringIO(playlist),
+                                  filename="playlist.txt"))
+
     @commands.command(help="지정한 음악을 재생합니다 (1회용)")
     @commands.cooldown(3, 10, commands.BucketType.guild)
     @commands.check(is_public)

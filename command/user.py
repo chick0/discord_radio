@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from discord.ext import commands
+from discord.errors import Forbidden
 
 from module.url import get_link
 
@@ -19,7 +20,12 @@ class Command(commands.Cog, name="모든 유저들을 위한 명령어"):
     @commands.command(help="개인메시지로 봇 초대 링크를 보냅니다")
     @commands.cooldown(2, 5, commands.BucketType.user)
     async def invite(self, ctx: commands.context):
-        await ctx.author.send(
-            "> 봇 초대 링크\n"
-            f"{get_link(bot=ctx.bot)}"
-        )
+        try:
+            await ctx.author.send(
+                "> 봇 초대 링크\n"
+                f"{get_link(bot=ctx.bot)}"
+            )
+        except Forbidden:
+            await ctx.reply(
+                f"`{get_link(bot=ctx.bot)}`"
+            )

@@ -27,7 +27,7 @@ class Radio:
     def _send_np(self):
         run_coroutine_threadsafe(
             coro=self.ctx.send("```\n"
-                               f"{self.now}\n"
+                               f"'{self.now}'를 재생합니다\n"
                                "```"),
             loop=self.loop
         )
@@ -74,14 +74,7 @@ class Radio:
 
         try:
             self.now = music_list[index]
-
-            run_coroutine_threadsafe(
-                coro=self.ctx.send("```\n"
-                                   f"'{self.now}'를 재생합니다\n"
-                                   "```"),
-                loop=self.loop
-            )
-
+            self._send_np()
             self._play_radio()
         except (IndexError, Exception):
             run_coroutine_threadsafe(
