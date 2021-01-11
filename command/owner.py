@@ -8,13 +8,6 @@ from discord.ext import commands
 
 
 class Command(commands.Cog, name="봇 주인용 명령어"):
-    @commands.command(help="라디오가 작동 중인 길드를 확인합니다")
-    @commands.is_owner()
-    async def status(self, ctx: commands.context):
-        await ctx.reply("```\n"
-                        f"{len(ctx.bot.voice_clients)}개의 서버에서 작동중\n"
-                        "```")
-
     @commands.command(help="봇을 종료합니다")
     @commands.is_owner()
     async def close(self, ctx: commands.context):

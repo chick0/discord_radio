@@ -63,32 +63,35 @@ class Radio:
 
         self.voice_client.play(
             source=player,
-            after=self.play_next
+            after=self._play_next
         )
 
-    def set_start(self, index: int):
-        music_list = []
-        for music in listdir(path.join("music")):
-            if music.endswith(".mp3"):
-                music_list.append(music)
-
-        try:
-            self.now = music_list[index]
-            self._send_np()
-            self._play_radio()
-        except (IndexError, Exception):
-            run_coroutine_threadsafe(
-                coro=self.ctx.send("```\n"
-                                   f"'{index}'번째 노래를 찾지 못함\n"
-                                   "```"),
-                loop=self.loop
-            )
-            self.play_next(error=None)
-
-    def play_next(self, error):
+    def _play_next(self, error):
         if error is not None:
             logger.error(f"{error}")
 
         if self.voice_client.is_connected():
             self._set_next()
             self._play_radio()
+
+    def start(self, index: [int, None]):
+        if index is None:
+            self._play_next(error=None)
+        else:
+            music_list = []
+            for music in listdir(path.join("music")):
+                if music.endswith(".mp3"):
+                    music_list.append(music)
+
+            try:
+                self.now = music_list[index]
+                self._send_np()
+                self._play_radio()
+            except (IndexError, Exception):
+                run_coroutine_threadsafe(
+                    coro=self.ctx.send("```\n"
+                                       f"'{index}'번째 노래를 찾지 못함\n"
+                                       "```"),
+                    loop=self.loop
+                )
+                self._play_next(error=None)

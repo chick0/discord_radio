@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-from io import StringIO
-from os import path, listdir
-from hashlib import md5
-
-from discord import File
 from discord.ext import commands
 from discord.abc import PrivateChannel
 
@@ -20,43 +15,11 @@ def is_public(ctx: commands.context):
 
 
 class Command(commands.Cog, name="라디오 조작 명령어"):
-    @commands.command(help="재생목록을 확인합니다")
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    async def playlist(self, ctx: commands.context):
-        playlist, index = "", 0
-        for music in listdir(path.join("music")):
-            if music.endswith(".mp3"):
-                playlist += f"[{index:03d}] {music}\n"
-                index += 1
-        await ctx.reply(content=f"재생목록 버전: `{md5(playlist.encode()).hexdigest()}`",
-                        file=File(fp=StringIO(playlist),
-                                  filename="playlist.txt"))
-
-    @commands.command(help="지정한 음악을 재생합니다 (1회용)")
+    @commands.command(help="음성 채널에 들어옵니다 (라디오 시작)",
+                      aliases=["j", "start", "켜기"])
     @commands.cooldown(3, 10, commands.BucketType.guild)
     @commands.check(is_public)
-    async def play(self, ctx: commands.context, index: int):
-        try:
-            voice_client = await ctx.author.voice.channel.connect()
-        except AttributeError:
-            await ctx.reply("```\n"
-                            "먼저 음성 채널에 들어가야 합니다.\n"
-                            "```")
-            return
-        except ClientException as why:
-            await ctx.reply("```\n"
-                            "음성 채널 접속에 실패하였습니다.\n"
-                            f"> {why}\n"
-                            "```")
-            return
-
-        radio = Radio(ctx=ctx, voice_client=voice_client)
-        radio.set_start(index=index)
-
-    @commands.command(help="음성 채널에 들어옵니다 (라디오 시작)")
-    @commands.cooldown(3, 10, commands.BucketType.guild)
-    @commands.check(is_public)
-    async def join(self, ctx: commands.context, option: str = None):
+    async def join(self, ctx: commands.context, options: str = ""):
         try:
             voice_client = await ctx.author.voice.channel.connect()
         except AttributeError:
@@ -71,14 +34,22 @@ class Command(commands.Cog, name="라디오 조작 명령어"):
                             "```")
             return
 
-        if option in ["now", "np"]:
-            radio = Radio(ctx=ctx, voice_client=voice_client, np=True)
-        else:
-            radio = Radio(ctx=ctx, voice_client=voice_client)
+        np, index = False, None
+        options = options.lower().split(",")
+        for option in options:
+            if option.startswith("np=true"):
+                np = True
+            if option.startswith("idx="):
+                try:
+                    index = int(option.split("=")[-1])
+                except (ValueError, IndexError):
+                    index = None
 
-        radio.play_next(error=None)
+        radio = Radio(ctx=ctx, voice_client=voice_client, np=np)
+        radio.start(index=index)
 
-    @commands.command(help="음성 채널에서 나갑니다 (라디오 종료)")
+    @commands.command(help="음성 채널에서 나갑니다 (라디오 종료)",
+                      aliases=["e", "leave", "나가기", "끄기"])
     @commands.check(is_public)
     async def exit(self, ctx: commands.context):
         try:
@@ -103,7 +74,7 @@ class Command(commands.Cog, name="라디오 조작 명령어"):
                 voice_client = await channel.connect()
 
                 radio = Radio(ctx=ctx, voice_client=voice_client)
-                radio.play_next(error=None)
+                radio.start(index=None)
             else:
                 await ctx.reply("```\n"
                                 "봇이랑 동일한 음성 채널에 들어와야합니다.\n"
@@ -111,7 +82,8 @@ class Command(commands.Cog, name="라디오 조작 명령어"):
         except AttributeError:
             pass
 
-    @commands.command(help="다음 노래로 넘깁니다")
+    @commands.command(help="다음 노래로 넘깁니다",
+                      aliases=["s", "sk", "스킵"])
     @commands.cooldown(3, 5, commands.BucketType.guild)
     @commands.check(is_public)
     async def skip(self, ctx: commands.context):
