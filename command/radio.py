@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from io import StringIO
 from os import path, listdir
+from hashlib import md5
 
 from discord import File
 from discord.ext import commands
@@ -27,7 +28,8 @@ class Command(commands.Cog, name="라디오 조작 명령어"):
             if music.endswith(".mp3"):
                 playlist += f"[{index:03d}] {music}\n"
                 index += 1
-        await ctx.reply(file=File(fp=StringIO(playlist),
+        await ctx.reply(content=f"재생목록 버전: `{md5(playlist.encode()).hexdigest()}`",
+                        file=File(fp=StringIO(playlist),
                                   filename="playlist.txt"))
 
     @commands.command(help="지정한 음악을 재생합니다 (1회용)")
