@@ -6,4 +6,5 @@ from configparser import ConfigParser
 config = ConfigParser()
 for conf_file in listdir(path.join("conf")):
     if conf_file.endswith(".ini"):
-        config.read(path.join("conf", conf_file))
+        config.read(filenames=path.join("conf", conf_file),
+                    encoding="utf-8")
